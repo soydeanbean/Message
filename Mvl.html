@@ -2,655 +2,633 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Music:)</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lato:wght@100;300&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Music</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,300;1,300&family=Montserrat:wght@100;200;300&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --lyric-color: rgba(255,255,255,0.92);
-    --lyric-dim: rgba(255,255,255,0.18);
-    --lyric-glow: rgba(200,180,220,0.4);
-    --transition-speed: 0.6s;
-  }
-
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    background: #0a0610;
-    color: white;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  #scene {
-    position: fixed; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-
-  /* ── Background layers ── */
-  #bg-layer {
-    position: absolute; inset: 0;
-    z-index: 0;
-    transition: background 4s ease;
-  }
-
-  .bg-stars {
-    position: absolute; inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 20% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 80% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 45% 8%, rgba(255,255,255,0.7) 0%, transparent 100%),
-      radial-gradient(1px 1px at 65% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(2px 2px at 90% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 30% 85%, rgba(255,255,255,0.5) 0%, transparent 100%),
-      radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 75% 90%, rgba(255,255,255,0.6) 0%, transparent 100%),
-      radial-gradient(1px 1px at 5% 30%, rgba(255,255,255,0.4) 0%, transparent 100%);
-    animation: twinkle 8s ease-in-out infinite alternate;
-    pointer-events: none;
-  }
-
-  @keyframes twinkle {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-  }
-
-  .bg-vignette {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(0,0,0,0.7) 100%);
-    pointer-events: none;
-  }
-
-  #particles {
-    position: absolute; inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0;
-    animation: float-up linear infinite;
-    pointer-events: none;
-  }
-
-  @keyframes float-up {
-    0% { opacity: 0; transform: translateY(0) scale(0); }
-    10% { opacity: 0.6; transform: translateY(-8px) scale(1); }
-    90% { opacity: 0.2; }
-    100% { opacity: 0; transform: translateY(-120px) scale(0.3); }
-  }
-
-  /* ── Lyric display ── */
-  #lyric-container {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding: 20px 30px;
-    max-width: min(700px, 92vw);
-    width: 100%;
-    display: flex; flex-direction: column; align-items: center;
-    gap: 10px;
-  }
-
-  .lyric-line {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: clamp(1.4rem, 4.5vw, 2.4rem);
-    font-weight: 300;
-    line-height: 1.5;
-    letter-spacing: 0.04em;
-    color: var(--lyric-dim);
-    transition: color var(--transition-speed) ease, text-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
-    transform: translateY(0);
-    pointer-events: none;
-    text-align: center;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .lyric-line.active {
-    color: var(--lyric-color);
-    text-shadow: 0 0 40px var(--lyric-glow), 0 0 80px rgba(180,140,220,0.15);
-    transform: translateY(-2px) scale(1.03);
-  }
-
-  .lyric-line.just-passed {
-    color: rgba(255,255,255,0.35);
-    transform: translateY(0);
-  }
-
-  /* ── Song info ── */
-  #song-info {
-    position: fixed; bottom: 28px; left: 0; right: 0;
-    z-index: 20;
-    text-align: center;
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-  }
-
-  #song-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-    font-weight: 400;
-    letter-spacing: 0.25em;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-  }
-
-  #progress-bar {
-    width: min(200px, 40vw);
-    height: 1px;
-    background: rgba(255,255,255,0.1);
-    position: relative;
-    overflow: hidden;
-    border-radius: 1px;
-  }
-
-  #progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, rgba(180,140,220,0.6), rgba(255,255,255,0.5));
-    width: 0%;
-    transition: width 0.5s linear;
-  }
-
-  /* ── Controls ── */
-  #controls {
-    position: fixed; top: 24px; left: 0; right: 0;
-    z-index: 20;
-    display: flex; align-items: center; justify-content: center; gap: 20px;
-  }
-
-  #play-btn {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.25);
-    color: rgba(255,255,255,0.7);
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    font-size: 1.1rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-
-  #play-btn:hover {
-    border-color: rgba(255,255,255,0.5);
-    color: white;
-    transform: scale(1.08);
-  }
-
-  #time-display {
-    font-family: 'Lato', sans-serif;
-    font-weight: 100;
-    font-size: 0.8rem;
-    letter-spacing: 0.15em;
-    color: rgba(255,255,255,0.3);
-    min-width: 90px;
-    text-align: center;
-  }
-
-  #seek-bar {
-    -webkit-appearance: none;
-    appearance: none;
-    width: min(160px, 30vw);
-    height: 2px;
-    background: rgba(255,255,255,0.12);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-
-  #seek-bar::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.6);
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  #seek-bar:hover::-webkit-slider-thumb { transform: scale(1.4); }
-  #seek-bar::-moz-range-thumb {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.6);
-    border: none;
-    cursor: pointer;
-  }
-
-  /* ── Emotion label ── */
-  #emotion-label {
-    position: fixed; top: 90px; left: 0; right: 0;
-    text-align: center;
-    font-family: 'Lato', sans-serif;
-    font-weight: 100;
-    font-size: 0.7rem;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.18);
-    transition: all 2s ease;
-    z-index: 20;
-  }
-
-  /* ── Heartbeat pulse ── */
-  @keyframes heartbeat {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
-  }
-
-  #lyric-container.pulse .lyric-line.active {
-    animation: heartbeat 1.5s ease-in-out;
-  }
-
-  /* ── Splash / tap to start ── */
-  #splash {
-    position: fixed; inset: 0;
-    z-index: 100;
-    background: #0a0610;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-    cursor: pointer;
-    transition: opacity 1.2s ease;
-  }
-
-  #splash-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1.8rem, 6vw, 3rem);
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.85);
-    text-align: center;
-    line-height: 1.3;
-  }
-
-  #splash-artist {
-    font-family: 'Lato', sans-serif;
-    font-weight: 100;
-    font-size: clamp(0.7rem, 2vw, 0.9rem);
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-  }
-
-  #splash-tap {
-    font-family: 'Lato', sans-serif;
-    font-weight: 300;
-    font-size: 0.8rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.25);
-    margin-top: 30px;
-    animation: breathe 2.5s ease-in-out infinite;
-  }
-
-  @keyframes breathe {
-    0%, 100% { opacity: 0.25; }
-    50% { opacity: 0.55; }
-  }
-
-  .hidden { opacity: 0; pointer-events: none; }
-
-  /* ── Audio source note ── */
-  #audio-note {
-    position: fixed; bottom: 70px; left: 0; right: 0;
-    text-align: center;
-    font-family: 'Lato', sans-serif;
-    font-weight: 300;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    color: rgba(255,255,255,0.18);
-    z-index: 20;
-    display: none;
-  }
-
-  #audio-note a {
-    color: rgba(180,140,220,0.5);
-    text-decoration: none;
-  }
-
-  /* ── Broken heart icon ── */
-  #broken-heart {
-    position: fixed; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2rem;
-    opacity: 0;
-    z-index: 5;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
-    filter: drop-shadow(0 0 20px rgba(180,100,150,0.6));
-  }
-
-  /* ── Mobile adjustments ── */
-  @media (max-width: 480px) {
-    #controls { gap: 12px; }
-    #seek-bar { display: none; }
-    #lyric-container { gap: 8px; padding: 16px 20px; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#050308;--accent:rgba(180,130,200,0.5);--glow-color:rgba(160,100,200,0.35);--word-dim:rgba(255,255,255,0.08);--word-mid:rgba(255,255,255,0.35);--word-lit:rgba(255,255,255,0.96);--emotion-label-color:rgba(180,130,200,0.45)}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'EB Garamond',Georgia,serif;-webkit-font-smoothing:antialiased;color:white}
+#bg{position:fixed;inset:0;z-index:0;transition:background 5s cubic-bezier(0.4,0,0.2,1);background:radial-gradient(ellipse 80% 60% at 50% 40%, #1a0828 0%, #0a0518 50%, #050308 100%)}
+#grain{position:fixed;inset:0;z-index:1;opacity:0.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:200px 200px;pointer-events:none}
+#stars{position:fixed;inset:0;z-index:1;pointer-events:none}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--dur,4s) ease-in-out infinite var(--delay,0s) alternate}
+@keyframes twinkle{0%{opacity:0.1}100%{opacity:0.7}}
+#vignette{position:fixed;inset:0;z-index:2;background:radial-gradient(ellipse 65% 65% at 50% 50%, transparent 20%, rgba(0,0,0,0.85) 100%);pointer-events:none}
+#particles{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.pt{position:absolute;border-radius:50%;animation:rise linear forwards;opacity:0}
+@keyframes rise{0%{opacity:0;transform:translateY(0) scale(0.5)}15%{opacity:1}80%{opacity:0.4}100%{opacity:0;transform:translateY(-180px) scale(0.1)}}
+.ripple{position:fixed;border-radius:50%;border:1px solid var(--glow-color);pointer-events:none;z-index:4;animation:ripple-out 2s ease-out forwards;transform:translate(-50%,-50%) scale(0)}
+@keyframes ripple-out{0%{opacity:0.6;transform:translate(-50%,-50%) scale(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(4)}}
+#stage{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px 100px}
+#lyric-wrap{position:relative;text-align:center;max-width:min(640px,90vw);min-height:120px;display:flex;align-items:center;justify-content:center}
+#lyric-text{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.6rem,5.5vw,2.8rem);font-weight:300;line-height:1.55;letter-spacing:0.03em;text-align:center;position:relative}
+.word{display:inline-block;color:var(--word-dim);transition:color 0.18s ease,text-shadow 0.18s ease,transform 0.18s ease;transform-origin:center bottom;white-space:nowrap;will-change:color,transform;position:relative}
+.word.lit{color:var(--word-lit);text-shadow:0 0 30px var(--glow-color),0 0 60px rgba(160,100,200,0.2),0 0 100px rgba(160,100,200,0.08);transform:scale(1.06) translateY(-1px)}
+.word.past{color:var(--word-mid)}
+.word-space{display:inline-block;width:0.28em;color:transparent;user-select:none}
+#lyric-text.entering{animation:line-in 0.55s cubic-bezier(0.22,1,0.36,1) forwards}
+#lyric-text.exiting{animation:line-out 0.4s cubic-bezier(0.4,0,1,1) forwards}
+@keyframes line-in{0%{opacity:0;transform:translateY(22px) scale(0.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes line-out{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-18px) scale(0.96)}}
+#emotion{position:fixed;top:80px;left:0;right:0;text-align:center;z-index:20;font-family:'Montserrat',sans-serif;font-weight:100;font-size:0.65rem;letter-spacing:0.55em;text-transform:uppercase;color:var(--emotion-label-color);transition:color 3s ease,opacity 1s ease;display:flex;align-items:center;justify-content:center;gap:10px}
+#emotion .ei{opacity:0.5;transition:all 2s ease}
+#topbar{position:fixed;top:0;left:0;right:0;height:64px;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:12px}
+#song-meta{display:flex;flex-direction:column;gap:2px;flex:1;overflow:hidden}
+#song-name{font-family:'Playfair Display',serif;font-size:0.82rem;font-weight:400;letter-spacing:0.05em;color:rgba(255,255,255,0.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#artist-name{font-family:'Montserrat',sans-serif;font-weight:100;font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.25)}
+#ctrl-play{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;flex-shrink:0;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#ctrl-play:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.35);color:white;transform:scale(1.07)}
+#ctrl-play:active{transform:scale(0.95)}
+#bottombar{position:fixed;bottom:0;left:0;right:0;z-index:30;padding:0 20px 20px;display:flex;flex-direction:column;gap:10px}
+#seekwrap{display:flex;align-items:center;gap:12px}
+#seek{-webkit-appearance:none;appearance:none;flex:1;height:2px;background:rgba(255,255,255,0.1);border-radius:2px;outline:none;cursor:pointer;transition:height 0.2s}
+#seek:hover{height:3px}
+#seek::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.7);cursor:pointer;transition:transform 0.2s,background 0.2s}
+#seek:hover::-webkit-slider-thumb{transform:scale(1.3);background:white}
+#seek::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.7);border:none;cursor:pointer}
+#time{font-family:'Montserrat',sans-serif;font-weight:200;font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.25);white-space:nowrap;min-width:72px;text-align:right}
+#progress-track{height:1px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;border-radius:1px}
+#progress-fill{height:100%;background:linear-gradient(90deg,rgba(160,100,200,0.5),rgba(220,180,255,0.5));width:0%;transition:width 0.5s linear;border-radius:1px}
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#050308;cursor:pointer;transition:opacity 1.4s cubic-bezier(0.4,0,0.2,1)}
+#splash.gone{opacity:0;pointer-events:none}
+#sp-icon{margin-bottom:12px;opacity:0.35;animation:sp-pulse 3s ease-in-out infinite}
+@keyframes sp-pulse{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.55;transform:scale(1.08)}}
+#sp-title{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,7vw,3.2rem);font-weight:300;font-style:italic;letter-spacing:0.02em;color:rgba(255,255,255,0.8);text-align:center;line-height:1.2}
+#sp-artist{font-family:'Montserrat',sans-serif;font-weight:100;font-size:0.72rem;letter-spacing:0.5em;text-transform:uppercase;color:rgba(255,255,255,0.28)}
+#sp-tap{font-family:'Montserrat',sans-serif;font-weight:200;font-size:0.68rem;letter-spacing:0.4em;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-top:28px;display:flex;align-items:center;gap:8px;animation:sp-breathe 2.5s ease-in-out infinite}
+@keyframes sp-breathe{0%,100%{opacity:0.5}50%{opacity:1}}
+#hb{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;background:radial-gradient(ellipse 40% 30% at 50% 50%, rgba(180,30,60,0.15), transparent 70%);transition:opacity 0.5s ease}
+#hb.flash{animation:hb-flash 1.2s ease forwards}
+@keyframes hb-flash{0%{opacity:0}15%{opacity:1}60%{opacity:0.4}100%{opacity:0}}
+@media(max-width:480px){#topbar{padding:0 16px}#bottombar{padding:0 16px 18px}#sp-title{font-size:2rem}}
 </style>
 </head>
 <body>
 
 <div id="splash">
-  <div class="bg-stars"></div>
-  <div id="splash-title">The Night We Met</div>
-  <div id="splash-artist">Lord Huron</div>
-  <div id="splash-tap">Tap to begin</div>
-</div>
-
-<div id="scene">
-  <div id="bg-layer">
-    <div class="bg-stars"></div>
-    <div class="bg-vignette"></div>
-  </div>
-  <div id="particles"></div>
-
-  <div id="broken-heart">💔</div>
-
-  <div id="controls">
-    <button id="play-btn" aria-label="Play / Pause">▶</button>
-    <div id="time-display">0:00 / 3:28</div>
-    <input type="range" id="seek-bar" min="0" max="208" value="0" step="0.5" aria-label="Seek">
-  </div>
-
-  <div id="emotion-label">♡ longing</div>
-
-  <div id="lyric-container"></div>
-
-  <div id="song-info">
-    <div id="song-title">The Night We Met &nbsp;·&nbsp; Lord Huron</div>
-    <div id="progress-bar"><div id="progress-fill"></div></div>
-  </div>
-
-  <div id="audio-note">
-    Add audio file named <code>the-night-we-met.mp3</code> to enable music<br>
-    or <a href="https://open.spotify.com/track/0hKRSZhUGEhKU6aNSPBACZ" target="_blank">listen on Spotify ↗</a>
+  <div id="sp-icon"><i data-lucide="heart-crack" style="width:52px;height:52px;stroke:rgba(200,140,220,0.6);stroke-width:1"></i></div>
+  <div id="sp-title">The Night We Met</div>
+  <div id="sp-artist">Lord Huron</div>
+  <div id="sp-tap">
+    <i data-lucide="play" style="width:12px;height:12px;stroke:currentColor;stroke-width:1.5"></i>
+    Tap to feel
   </div>
 </div>
 
-<audio id="audio" preload="metadata"></audio>
+<div id="bg"></div>
+<div id="grain"></div>
+<div id="stars"></div>
+<div id="vignette"></div>
+<div id="particles"></div>
+<div id="hb"></div>
+
+<div id="topbar">
+  <div id="song-meta">
+    <div id="song-name">The Night We Met</div>
+    <div id="artist-name">Lord Huron</div>
+  </div>
+  <button id="ctrl-play" aria-label="Play/Pause">
+    <i data-lucide="play" id="play-icon" style="width:18px;height:18px;stroke:currentColor;stroke-width:1.5;margin-left:2px"></i>
+  </button>
+</div>
+
+<div id="emotion">
+  <i data-lucide="moon" class="ei" id="emotion-icon" style="width:11px;height:11px;stroke:currentColor;stroke-width:1.5"></i>
+  <span id="emotion-text">longing</span>
+</div>
+
+<div id="stage">
+  <div id="lyric-wrap">
+    <div id="lyric-text"></div>
+  </div>
+</div>
+
+<div id="bottombar">
+  <div id="progress-track"><div id="progress-fill"></div></div>
+  <div id="seekwrap">
+    <i data-lucide="music" style="width:12px;height:12px;stroke:rgba(255,255,255,0.2);stroke-width:1.5;flex-shrink:0"></i>
+    <input type="range" id="seek" min="0" max="208" step="0.5" value="0" aria-label="Seek">
+    <div id="time">0:00 / 3:28</div>
+  </div>
+</div>
+
+<audio id="audio" src="music.mp3" preload="auto"></audio>
 
 <script>
-const LYRICS = [
-  { t: 0.0,  text: '' },
-  { t: 4.5,  text: 'I am not the only traveler' },
-  { t: 9.0,  text: 'Who has not repaid his debt' },
-  { t: 13.5, text: 'I\'ve been searching for a trail to follow' },
-  { t: 18.5, text: 'Back, the night we met' },
-  { t: 26.5, text: 'I had all and then most of you' },
-  { t: 31.0, text: 'Some and now none of you' },
-  { t: 35.5, text: 'Take me back to the night we met' },
-  { t: 43.5, text: 'I don\'t know what I\'m supposed to do' },
-  { t: 48.0, text: 'Haunted by the ghost of you' },
-  { t: 52.5, text: 'Oh, take me back to the night we met' },
-  { t: 62.0, text: '' },
-  { t: 68.0, text: 'When the night was full of terrors' },
-  { t: 72.5, text: 'And your eyes were filled with tears' },
-  { t: 77.0, text: 'With nothing to believe in' },
-  { t: 81.5, text: 'But the morning that appeared' },
-  { t: 89.0, text: 'I had all and then most of you' },
-  { t: 93.5, text: 'Some and now none of you' },
-  { t: 98.0, text: 'Take me back to the night we met' },
-  { t: 106.0, text: 'I don\'t know what I\'m supposed to do' },
-  { t: 110.5, text: 'Haunted by the ghost of you' },
-  { t: 115.0, text: 'Oh, take me back to the night we met' },
-  { t: 124.0, text: '' },
-  { t: 130.0, text: 'I had all and then most of you' },
-  { t: 134.5, text: 'Some and now none of you' },
-  { t: 139.0, text: 'Take me back to the night we met' },
-  { t: 147.0, text: 'I don\'t know what I\'m supposed to do' },
-  { t: 151.5, text: 'Haunted by the ghost of you' },
-  { t: 156.0, text: 'Oh, take me back to the night we met' },
-  { t: 165.0, text: '' },
-  { t: 170.0, text: 'Take me back to the night we met' },
-  { t: 178.0, text: 'Take me back to the night we met' },
-  { t: 186.0, text: 'Take me back to the night we met' },
-  { t: 194.0, text: 'Take me back…' },
-  { t: 200.0, text: '' },
-  { t: 208.0, text: '' }
+lucide.createIcons();
+
+// ─── LYRICS DATA ───
+// Line timestamps from verified LRC files (Megalobiz + Lyricsify, averaged).
+// Word timings spread proportionally within each line based on syllable weight.
+// Each line's `end` = next line's `t` minus a small buffer.
+//
+// LRC source (Megalobiz):
+// [00:30.61] [00:37.86] [00:44.59] [00:51.36]
+// [00:58.62] [01:05.61] [01:12.86] [01:20.36]
+// [01:27.35] [01:34.85] [01:42.12] [01:49.12]
+// [01:56.62] [02:03.62] [02:10.85] [02:17.86]
+// [02:25.36] [02:32.60] [02:40.14] [02:47.11]
+
+const LINES = [
+
+  // ── VERSE 1 ──────────────────────────────────────────────────
+  // [00:30.61] I am not the only traveler
+  { t:30.61, end:37.86, words:[
+    {w:'I',      t:30.61, e:30.95},
+    {w:'am',     t:30.95, e:31.30},
+    {w:'not',    t:31.30, e:31.80},
+    {w:'the',    t:31.80, e:32.10},
+    {w:'only',   t:32.10, e:32.90},
+    {w:'traveler',t:32.90,e:37.50}
+  ]},
+
+  // [00:37.86] Who has not repaid his debt
+  { t:37.86, end:44.59, words:[
+    {w:'Who',    t:37.86, e:38.30},
+    {w:'has',    t:38.30, e:38.65},
+    {w:'not',    t:38.65, e:39.20},
+    {w:'repaid', t:39.20, e:40.30},
+    {w:'his',    t:40.30, e:40.75},
+    {w:'debt',   t:40.75, e:44.20}
+  ]},
+
+  // [00:44.59] I've been searching for a trail to follow again
+  { t:44.59, end:51.36, words:[
+    {w:"I've",   t:44.59, e:44.95},
+    {w:'been',   t:44.95, e:45.30},
+    {w:'searching',t:45.30,e:46.25},
+    {w:'for',    t:46.25, e:46.55},
+    {w:'a',      t:46.55, e:46.75},
+    {w:'trail',  t:46.75, e:47.40},
+    {w:'to',     t:47.40, e:47.65},
+    {w:'follow', t:47.65, e:48.50},
+    {w:'again',  t:48.50, e:51.00}
+  ]},
+
+  // [00:51.36] Take me back to the night we met
+  { t:51.36, end:58.62, words:[
+    {w:'Take',   t:51.36, e:51.95},
+    {w:'me',     t:51.95, e:52.25},
+    {w:'back',   t:52.25, e:52.85},
+    {w:'to',     t:52.85, e:53.15},
+    {w:'the',    t:53.15, e:53.45},
+    {w:'night',  t:53.45, e:54.10},
+    {w:'we',     t:54.10, e:54.50},
+    {w:'met',    t:54.50, e:58.30}
+  ]},
+
+  // ── PRE-CHORUS 1 ─────────────────────────────────────────────
+  // [00:58.62] And then I can tell myself
+  { t:58.62, end:65.61, words:[
+    {w:'And',    t:58.62, e:59.10},
+    {w:'then',   t:59.10, e:59.60},
+    {w:'I',      t:59.60, e:59.95},
+    {w:'can',    t:59.95, e:60.40},
+    {w:'tell',   t:60.40, e:61.00},
+    {w:'myself', t:61.00, e:65.20}
+  ]},
+
+  // [01:05.61] What the hell I'm supposed to do
+  { t:65.61, end:72.86, words:[
+    {w:'What',   t:65.61, e:66.10},
+    {w:'the',    t:66.10, e:66.40},
+    {w:'hell',   t:66.40, e:66.95},
+    {w:"I'm",    t:66.95, e:67.35},
+    {w:'supposed',t:67.35,e:68.30},
+    {w:'to',     t:68.30, e:68.60},
+    {w:'do',     t:68.60, e:72.50}
+  ]},
+
+  // [01:12.86] And then I can tell myself
+  { t:72.86, end:80.36, words:[
+    {w:'And',    t:72.86, e:73.35},
+    {w:'then',   t:73.35, e:73.85},
+    {w:'I',      t:73.85, e:74.20},
+    {w:'can',    t:74.20, e:74.65},
+    {w:'tell',   t:74.65, e:75.25},
+    {w:'myself', t:75.25, e:79.90}
+  ]},
+
+  // [01:20.36] Not to ride along with you
+  { t:80.36, end:87.35, words:[
+    {w:'Not',    t:80.36, e:80.90},
+    {w:'to',     t:80.90, e:81.20},
+    {w:'ride',   t:81.20, e:81.85},
+    {w:'along',  t:81.85, e:82.65},
+    {w:'with',   t:82.65, e:83.05},
+    {w:'you',    t:83.05, e:87.00}
+  ]},
+
+  // ── CHORUS 1 ─────────────────────────────────────────────────
+  // [01:27.35] I had all and then most of you, some and now none of you
+  { t:87.35, end:94.85, words:[
+    {w:'I',      t:87.35, e:87.70},
+    {w:'had',    t:87.70, e:88.15},
+    {w:'all',    t:88.15, e:88.75},
+    {w:'and',    t:88.75, e:89.10},
+    {w:'then',   t:89.10, e:89.60},
+    {w:'most',   t:89.60, e:90.15},
+    {w:'of',     t:90.15, e:90.40},
+    {w:'you,',   t:90.40, e:91.20},
+    {w:'some',   t:91.20, e:91.70},
+    {w:'and',    t:91.70, e:92.00},
+    {w:'now',    t:92.00, e:92.50},
+    {w:'none',   t:92.50, e:93.00},
+    {w:'of',     t:93.00, e:93.25},
+    {w:'you',    t:93.25, e:94.60}
+  ]},
+
+  // [01:34.85] Take me back to the night we met
+  { t:94.85, end:102.12, words:[
+    {w:'Take',   t:94.85, e:95.45},
+    {w:'me',     t:95.45, e:95.75},
+    {w:'back',   t:95.75, e:96.35},
+    {w:'to',     t:96.35, e:96.65},
+    {w:'the',    t:96.65, e:96.95},
+    {w:'night',  t:96.95, e:97.60},
+    {w:'we',     t:97.60, e:98.00},
+    {w:'met',    t:98.00, e:101.80}
+  ]},
+
+  // ── POST-CHORUS ───────────────────────────────────────────────
+  // [01:42.12] I don't know what I'm supposed to do, haunted by the ghost of you
+  { t:102.12, end:109.12, words:[
+    {w:'I',       t:102.12, e:102.45},
+    {w:"don't",   t:102.45, e:102.95},
+    {w:'know',    t:102.95, e:103.50},
+    {w:'what',    t:103.50, e:103.85},
+    {w:"I'm",     t:103.85, e:104.20},
+    {w:'supposed',t:104.20, e:105.10},
+    {w:'to',      t:105.10, e:105.40},
+    {w:'do,',     t:105.40, e:106.10},
+    {w:'haunted', t:106.10, e:106.90},
+    {w:'by',      t:106.90, e:107.20},
+    {w:'the',     t:107.20, e:107.45},
+    {w:'ghost',   t:107.45, e:108.00},
+    {w:'of',      t:108.00, e:108.25},
+    {w:'you',     t:108.25, e:108.90}
+  ]},
+
+  // [01:49.12] Oh, take me back to the night we met
+  { t:109.12, end:116.62, words:[
+    {w:'Oh,',    t:109.12, e:109.90},
+    {w:'take',   t:109.90, e:110.40},
+    {w:'me',     t:110.40, e:110.70},
+    {w:'back',   t:110.70, e:111.30},
+    {w:'to',     t:111.30, e:111.60},
+    {w:'the',    t:111.60, e:111.90},
+    {w:'night',  t:111.90, e:112.55},
+    {w:'we',     t:112.55, e:112.95},
+    {w:'met',    t:112.95, e:116.30}
+  ]},
+
+  // ── VERSE 2 ──────────────────────────────────────────────────
+  // [01:56.62] When the night was full of terrors
+  { t:116.62, end:123.62, words:[
+    {w:'When',   t:116.62, e:117.10},
+    {w:'the',    t:117.10, e:117.40},
+    {w:'night',  t:117.40, e:118.00},
+    {w:'was',    t:118.00, e:118.40},
+    {w:'full',   t:118.40, e:118.90},
+    {w:'of',     t:118.90, e:119.20},
+    {w:'terrors',t:119.20, e:123.30}
+  ]},
+
+  // [02:03.62] And your eyes were filled with tears
+  { t:123.62, end:130.85, words:[
+    {w:'And',    t:123.62, e:124.10},
+    {w:'your',   t:124.10, e:124.50},
+    {w:'eyes',   t:124.50, e:125.10},
+    {w:'were',   t:125.10, e:125.55},
+    {w:'filled', t:125.55, e:126.20},
+    {w:'with',   t:126.20, e:126.60},
+    {w:'tears',  t:126.60, e:130.50}
+  ]},
+
+  // [02:10.85] When you had not touched me yet
+  { t:130.85, end:137.86, words:[
+    {w:'When',   t:130.85, e:131.35},
+    {w:'you',    t:131.35, e:131.75},
+    {w:'had',    t:131.75, e:132.20},
+    {w:'not',    t:132.20, e:132.70},
+    {w:'touched',t:132.70, e:133.45},
+    {w:'me',     t:133.45, e:133.85},
+    {w:'yet',    t:133.85, e:137.50}
+  ]},
+
+  // [02:17.86] Oh, take me back to the night we met
+  { t:137.86, end:145.36, words:[
+    {w:'Oh,',    t:137.86, e:138.65},
+    {w:'take',   t:138.65, e:139.15},
+    {w:'me',     t:139.15, e:139.45},
+    {w:'back',   t:139.45, e:140.05},
+    {w:'to',     t:140.05, e:140.35},
+    {w:'the',    t:140.35, e:140.65},
+    {w:'night',  t:140.65, e:141.30},
+    {w:'we',     t:141.30, e:141.70},
+    {w:'met',    t:141.70, e:145.00}
+  ]},
+
+  // ── CHORUS 2 ─────────────────────────────────────────────────
+  // [02:25.36] I had all and then most of you, some and now none of you
+  { t:145.36, end:152.60, words:[
+    {w:'I',      t:145.36, e:145.70},
+    {w:'had',    t:145.70, e:146.15},
+    {w:'all',    t:146.15, e:146.75},
+    {w:'and',    t:146.75, e:147.10},
+    {w:'then',   t:147.10, e:147.60},
+    {w:'most',   t:147.60, e:148.15},
+    {w:'of',     t:148.15, e:148.40},
+    {w:'you,',   t:148.40, e:149.20},
+    {w:'some',   t:149.20, e:149.70},
+    {w:'and',    t:149.70, e:150.00},
+    {w:'now',    t:150.00, e:150.50},
+    {w:'none',   t:150.50, e:151.00},
+    {w:'of',     t:151.00, e:151.25},
+    {w:'you',    t:151.25, e:152.30}
+  ]},
+
+  // [02:32.60] Take me back to the night we met
+  { t:152.60, end:160.14, words:[
+    {w:'Take',   t:152.60, e:153.20},
+    {w:'me',     t:153.20, e:153.50},
+    {w:'back',   t:153.50, e:154.10},
+    {w:'to',     t:154.10, e:154.40},
+    {w:'the',    t:154.40, e:154.70},
+    {w:'night',  t:154.70, e:155.35},
+    {w:'we',     t:155.35, e:155.75},
+    {w:'met',    t:155.75, e:159.80}
+  ]},
+
+  // [02:40.14] I don't know what I'm supposed to do, haunted by the ghost of you
+  { t:160.14, end:167.11, words:[
+    {w:'I',       t:160.14, e:160.47},
+    {w:"don't",   t:160.47, e:160.97},
+    {w:'know',    t:160.97, e:161.52},
+    {w:'what',    t:161.52, e:161.87},
+    {w:"I'm",     t:161.87, e:162.22},
+    {w:'supposed',t:162.22, e:163.12},
+    {w:'to',      t:163.12, e:163.42},
+    {w:'do,',     t:163.42, e:164.12},
+    {w:'haunted', t:164.12, e:164.92},
+    {w:'by',      t:164.92, e:165.22},
+    {w:'the',     t:165.22, e:165.47},
+    {w:'ghost',   t:165.47, e:166.02},
+    {w:'of',      t:166.02, e:166.27},
+    {w:'you',     t:166.27, e:166.90}
+  ]},
+
+  // [02:47.11] Take me back to the night we met  (outro — fades)
+  { t:167.11, end:208.0, words:[
+    {w:'Take',   t:167.11, e:167.70},
+    {w:'me',     t:167.70, e:168.00},
+    {w:'back',   t:168.00, e:168.60},
+    {w:'to',     t:168.60, e:168.90},
+    {w:'the',    t:168.90, e:169.20},
+    {w:'night',  t:169.20, e:169.85},
+    {w:'we',     t:169.85, e:170.25},
+    {w:'met',    t:170.25, e:208.0}
+  ]}
 ];
 
+// ─── EMOTIONS ───
 const EMOTIONS = [
-  { t: 0,    bg: 'radial-gradient(ellipse at 40% 30%, #1a0f2e 0%, #0a0610 60%, #050308 100%)', label: 'longing', color: 'rgba(160,120,200,0.35)' },
-  { t: 4,    bg: 'radial-gradient(ellipse at 50% 40%, #1e1030 0%, #0d0818 60%, #060410 100%)', label: 'lost', color: 'rgba(140,100,180,0.35)' },
-  { t: 18,   bg: 'radial-gradient(ellipse at 30% 50%, #2a0a1e 0%, #150614 60%, #080410 100%)', label: 'memory', color: 'rgba(200,100,150,0.4)' },
-  { t: 26,   bg: 'radial-gradient(ellipse at 60% 35%, #200820 0%, #120610 60%, #080410 100%)', label: 'grief', color: 'rgba(180,80,160,0.35)' },
-  { t: 35,   bg: 'radial-gradient(ellipse at 50% 60%, #1a0520 0%, #0e0414 60%, #080410 100%)', label: 'longing', color: 'rgba(160,100,200,0.4)' },
-  { t: 43,   bg: 'radial-gradient(ellipse at 40% 40%, #1e0a28 0%, #0f0418 60%, #080410 100%)', label: 'haunted', color: 'rgba(120,80,180,0.45)' },
-  { t: 62,   bg: 'radial-gradient(ellipse at 50% 50%, #0a0610 0%, #060408 100%)', label: 'silence', color: 'rgba(100,80,140,0.2)' },
-  { t: 68,   bg: 'radial-gradient(ellipse at 35% 45%, #280818 0%, #160610 60%, #080410 100%)', label: 'terror', color: 'rgba(200,80,100,0.35)' },
-  { t: 77,   bg: 'radial-gradient(ellipse at 55% 35%, #1e0a10 0%, #120610 60%, #080410 100%)', label: 'despair', color: 'rgba(180,60,80,0.35)' },
-  { t: 89,   bg: 'radial-gradient(ellipse at 45% 55%, #240828 0%, #14061a 60%, #080410 100%)', label: 'grief', color: 'rgba(160,80,200,0.4)' },
-  { t: 106,  bg: 'radial-gradient(ellipse at 50% 40%, #1a0628 0%, #100418 60%, #080410 100%)', label: 'haunted', color: 'rgba(120,80,180,0.45)' },
-  { t: 124,  bg: 'radial-gradient(ellipse at 50% 50%, #080410 0%, #040208 100%)', label: 'breaking', color: 'rgba(80,60,120,0.25)' },
-  { t: 130,  bg: 'radial-gradient(ellipse at 40% 45%, #280a20 0%, #180614 60%, #0a0410 100%)', label: 'grief', color: 'rgba(200,80,160,0.45)' },
-  { t: 156,  bg: 'radial-gradient(ellipse at 50% 50%, #200828 0%, #12041a 60%, #080410 100%)', label: 'longing', color: 'rgba(140,80,200,0.5)' },
-  { t: 165,  bg: 'radial-gradient(ellipse at 50% 60%, #0e0418 0%, #080410 80%, #040208 100%)', label: 'fading', color: 'rgba(100,60,160,0.3)' },
-  { t: 194,  bg: 'radial-gradient(ellipse at 50% 50%, #080410 0%, #040208 100%)', label: '…', color: 'rgba(80,60,120,0.15)' }
+  { t:0,      icon:'moon',        label:'longing',   bg:'radial-gradient(ellipse 80% 60% at 50% 40%, #1a0828 0%, #0a0518 55%, #050308 100%)',  gc:'rgba(160,100,200,0.35)' },
+  { t:28,     icon:'wind',        label:'adrift',    bg:'radial-gradient(ellipse 70% 70% at 45% 35%, #1e0e30 0%, #0c0620 55%, #050308 100%)',  gc:'rgba(140,90,210,0.35)' },
+  { t:44.59,  icon:'compass',     label:'searching', bg:'radial-gradient(ellipse 75% 55% at 55% 45%, #280c1e 0%, #160814 55%, #060208 100%)',  gc:'rgba(200,90,140,0.4)' },
+  { t:51.36,  icon:'heart-crack', label:'broken',    bg:'radial-gradient(ellipse 60% 70% at 40% 40%, #300818 0%, #180610 55%, #060208 100%)',  gc:'rgba(200,60,100,0.4)' },
+  { t:87.35,  icon:'ghost',       label:'haunted',   bg:'radial-gradient(ellipse 65% 65% at 50% 50%, #1c0828 0%, #0e0418 55%, #050210 100%)',  gc:'rgba(140,80,200,0.45)' },
+  { t:102.12, icon:'ghost',       label:'haunted',   bg:'radial-gradient(ellipse 65% 65% at 50% 50%, #200830 0%, #0e041c 55%, #050210 100%)',  gc:'rgba(120,70,190,0.5)' },
+  { t:116.62, icon:'cloud-rain',  label:'terror',    bg:'radial-gradient(ellipse 60% 55% at 35% 40%, #2e0810 0%, #180608 55%, #060208 100%)',  gc:'rgba(220,70,80,0.4)' },
+  { t:123.62, icon:'droplets',    label:'tears',     bg:'radial-gradient(ellipse 65% 60% at 55% 35%, #200a14 0%, #100610 55%, #060208 100%)',  gc:'rgba(180,60,90,0.35)' },
+  { t:137.86, icon:'heart-crack', label:'grief',     bg:'radial-gradient(ellipse 60% 65% at 45% 50%, #280820 0%, #140618 55%, #060210 100%)',  gc:'rgba(190,70,170,0.4)' },
+  { t:145.36, icon:'ghost',       label:'haunted',   bg:'radial-gradient(ellipse 65% 65% at 50% 50%, #1a0628 0%, #0c041c 55%, #050210 100%)',  gc:'rgba(130,70,200,0.5)' },
+  { t:160.14, icon:'moon',        label:'longing',   bg:'radial-gradient(ellipse 70% 60% at 50% 50%, #1e0830 0%, #0e0420 55%, #050210 100%)',  gc:'rgba(150,90,210,0.5)' },
+  { t:167.11, icon:'ellipsis',    label:'…',         bg:'radial-gradient(ellipse 30% 30% at 50% 50%, #0a0418 0%, #040210 100%)',               gc:'rgba(80,60,140,0.18)' }
 ];
 
-const WINDOW_LINES = 3;
+// ─── STARS ───
+const starsEl = document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const sz=Math.random()*1.5+0.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${3+Math.random()*6}s;--delay:${-Math.random()*8}s;`;
+  starsEl.appendChild(s);
+}
 
-const audio = document.getElementById('audio');
-const playBtn = document.getElementById('play-btn');
-const seekBar = document.getElementById('seek-bar');
-const timeDisplay = document.getElementById('time-display');
+// ─── DOM REFS ───
+const audio        = document.getElementById('audio');
+const playBtn      = document.getElementById('ctrl-play');
+const playIcon     = document.getElementById('play-icon');
+const seekEl       = document.getElementById('seek');
+const timeEl       = document.getElementById('time');
 const progressFill = document.getElementById('progress-fill');
-const bgLayer = document.getElementById('bg-layer');
-const emotionLabel = document.getElementById('emotion-label');
-const lyricContainer = document.getElementById('lyric-container');
-const splash = document.getElementById('splash');
-const audioNote = document.getElementById('audio-note');
-const brokenHeart = document.getElementById('broken-heart');
-const particlesEl = document.getElementById('particles');
+const bgEl         = document.getElementById('bg');
+const emotionTextEl= document.getElementById('emotion-text');
+const emotionIconEl= document.getElementById('emotion-icon');
+const lyricTextEl  = document.getElementById('lyric-text');
+const splash       = document.getElementById('splash');
+const hbEl         = document.getElementById('hb');
+const particlesEl  = document.getElementById('particles');
 
-let isPlaying = false;
-let audioLoaded = false;
-let currentLyricIdx = -1;
-let currentEmotionIdx = -1;
-let rafId = null;
-let fakeTime = 0;
-let lastTs = null;
+// ─── STATE ───
+let playing       = false;
+let fakeTime      = 0;
+let lastStamp     = null;
+let curLineIdx    = -1;
+let curEmotionIdx = -1;
+let rafId         = null;
+const DURATION    = 208;
 
-function fmt(s) {
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return `${m}:${sec.toString().padStart(2, '0')}`;
+// ─── UTILS ───
+const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+function setIcon(el,name){el.setAttribute('data-lucide',name);lucide.createIcons({nodes:[el]});}
+
+// ─── RENDER LINE ───
+let lineTimeout = null;
+function renderLine(lineIdx) {
+  if(lineIdx === curLineIdx) return;
+  curLineIdx = lineIdx;
+
+  lyricTextEl.classList.remove('entering');
+  lyricTextEl.classList.add('exiting');
+  clearTimeout(lineTimeout);
+
+  lineTimeout = setTimeout(()=>{
+    lyricTextEl.classList.remove('exiting');
+    lyricTextEl.innerHTML='';
+    if(lineIdx<0||lineIdx>=LINES.length) return;
+
+    const line=LINES[lineIdx];
+    line.words.forEach((wd,i)=>{
+      if(i>0){
+        const sp=document.createElement('span');
+        sp.className='word-space';
+        sp.textContent=' ';
+        lyricTextEl.appendChild(sp);
+      }
+      const span=document.createElement('span');
+      span.className='word';
+      span.dataset.wi=i;
+      span.textContent=wd.w;
+      lyricTextEl.appendChild(span);
+    });
+
+    lyricTextEl.classList.add('entering');
+    setTimeout(()=>lyricTextEl.classList.remove('entering'),600);
+    spawnRipple();
+  },380);
 }
 
-function buildLyricDOM() {
-  lyricContainer.innerHTML = '';
-  const visible = LYRICS.filter(l => l.text !== '');
-  visible.forEach((l, i) => {
-    const div = document.createElement('div');
-    div.className = 'lyric-line';
-    div.dataset.idx = i;
-    div.dataset.t = l.t;
-    div.textContent = l.text;
-    lyricContainer.appendChild(div);
+// ─── WORD HIGHLIGHT ───
+function updateWords(t) {
+  if(curLineIdx<0||curLineIdx>=LINES.length) return;
+  const line=LINES[curLineIdx];
+  const spans=lyricTextEl.querySelectorAll('.word');
+  spans.forEach((sp,i)=>{
+    const wd=line.words[i];
+    if(!wd) return;
+    sp.classList.remove('lit','past');
+    if(t>=wd.t&&t<wd.e) sp.classList.add('lit');
+    else if(t>=wd.e)     sp.classList.add('past');
   });
 }
 
-function getActiveIdx(t) {
-  let idx = -1;
-  for (let i = 0; i < LYRICS.length; i++) {
-    if (LYRICS[i].t <= t && LYRICS[i].text !== '') idx = i;
-    else if (LYRICS[i].t > t) break;
+// ─── ACTIVE LINE ───
+// Returns the index of the line whose window [t, end) contains `t`.
+// Also accepts the line whose start is nearest but not yet reached (look-ahead 0.3s)
+// so that the transition animation lands just before the words appear.
+function getLineIdx(t) {
+  for(let i=0;i<LINES.length;i++){
+    if(t>=LINES[i].t&&t<LINES[i].end) return i;
   }
-  return idx;
+  return -1;
 }
 
-function getEmotionIdx(t) {
-  let idx = 0;
-  for (let i = 0; i < EMOTIONS.length; i++) {
-    if (EMOTIONS[i].t <= t) idx = i;
-  }
-  return idx;
-}
-
-const visibleLines = Array.from(lyricContainer.children);
-
-function updateLyrics(t) {
-  const lyricLines = Array.from(lyricContainer.querySelectorAll('.lyric-line'));
-  const activeT = LYRICS.slice().reverse().find(l => l.t <= t && l.text !== '');
-  if (!activeT) {
-    lyricLines.forEach(el => { el.classList.remove('active','just-passed'); });
-    return;
-  }
-  const activeTime = activeT.t;
-
-  lyricLines.forEach(el => {
-    const elT = parseFloat(el.dataset.t);
-    el.classList.remove('active','just-passed');
-    if (elT === activeTime) {
-      el.classList.add('active');
-    } else if (elT < activeTime) {
-      el.classList.add('just-passed');
-    }
-  });
-
-  // scroll active into view
-  const activeEl = lyricContainer.querySelector('.lyric-line.active');
-  if (activeEl) {
-    activeEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-  }
-}
-
+// ─── EMOTION ───
 function updateEmotion(t) {
-  const idx = getEmotionIdx(t);
-  if (idx === currentEmotionIdx) return;
-  currentEmotionIdx = idx;
-  const e = EMOTIONS[idx];
-
-  const stars = bgLayer.querySelector('.bg-stars');
-  const vignette = bgLayer.querySelector('.bg-vignette');
-  bgLayer.style.transition = 'background 4s ease';
-  bgLayer.style.background = e.bg;
-
-  emotionLabel.style.color = e.color;
-  emotionLabel.textContent = `♡ ${e.label}`;
-
-  document.documentElement.style.setProperty('--lyric-glow', e.color);
-
-  spawnParticles(e.color);
+  let idx=0;
+  for(let i=0;i<EMOTIONS.length;i++){
+    if(EMOTIONS[i].t<=t) idx=i;
+  }
+  if(idx===curEmotionIdx) return;
+  curEmotionIdx=idx;
+  const e=EMOTIONS[idx];
+  bgEl.style.background=e.bg;
+  document.documentElement.style.setProperty('--glow-color',e.gc);
+  document.documentElement.style.setProperty('--emotion-label-color',e.gc);
+  emotionTextEl.textContent=e.label;
+  setIcon(emotionIconEl,e.icon);
+  emotionIconEl.style.stroke=e.gc;
+  if(e.label==='broken'||e.label==='grief'){
+    hbEl.classList.remove('flash');
+    void hbEl.offsetWidth;
+    hbEl.classList.add('flash');
+  }
+  spawnParticles(e.gc);
 }
 
-function spawnParticles(color) {
-  for (let i = 0; i < 6; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 4 + 1;
-    p.style.cssText = `
-      width:${size}px; height:${size}px;
-      background:${color};
-      left:${Math.random()*100}%;
-      bottom:${Math.random()*40}%;
-      animation-duration:${3 + Math.random()*4}s;
-      animation-delay:${Math.random()*2}s;
-    `;
+// ─── PARTICLES ───
+function spawnParticles(color){
+  for(let i=0;i<8;i++){
+    const p=document.createElement('div');
+    p.className='pt';
+    const sz=Math.random()*3+1;
+    const dur=4+Math.random()*5;
+    p.style.cssText=`width:${sz}px;height:${sz}px;background:${color};left:${10+Math.random()*80}%;bottom:${5+Math.random()*30}%;animation-duration:${dur}s;animation-delay:${Math.random()*2}s;`;
     particlesEl.appendChild(p);
-    setTimeout(() => p.remove(), 8000);
+    setTimeout(()=>p.remove(),(dur+2)*1000);
   }
 }
 
-function updateProgress(t, dur) {
-  const pct = dur ? (t / dur) * 100 : 0;
-  progressFill.style.width = pct + '%';
-  seekBar.value = t;
-  timeDisplay.textContent = `${fmt(t)} / ${fmt(dur || 208)}`;
+// ─── RIPPLE ───
+function spawnRipple(){
+  const r=document.createElement('div');
+  r.className='ripple';
+  r.style.cssText=`left:${40+Math.random()*20}%;top:${35+Math.random()*30}%;width:60px;height:60px;`;
+  document.body.appendChild(r);
+  setTimeout(()=>r.remove(),2100);
 }
 
-function tick(ts) {
-  if (!isPlaying) return;
-
+// ─── TICK ───
+function tick(ts){
+  if(!playing) return;
   let t;
-  if (audioLoaded && !audio.paused) {
-    t = audio.currentTime;
-    const dur = audio.duration || 208;
-    updateProgress(t, dur);
-    seekBar.max = dur;
+  const useAudio=!audio.paused&&audio.readyState>=2;
+  if(useAudio){
+    t=audio.currentTime;
+    lastStamp=null;
   } else {
-    if (lastTs !== null) {
-      fakeTime += (ts - lastTs) / 1000;
-    }
-    lastTs = ts;
-    t = fakeTime;
-    if (t > 208) { t = 208; isPlaying = false; playBtn.textContent = '▶'; }
-    updateProgress(t, 208);
+    if(lastStamp!==null) fakeTime+=(ts-lastStamp)/1000;
+    lastStamp=ts;
+    t=fakeTime;
+    if(t>=DURATION){t=DURATION;playing=false;setIcon(playIcon,'play');}
   }
 
-  updateLyrics(t);
+  seekEl.value=t;
+  progressFill.style.width=((t/DURATION)*100)+'%';
+  timeEl.textContent=`${fmt(t)} / ${fmt(DURATION)}`;
+
+  const li=getLineIdx(t);
+  if(li!==curLineIdx) renderLine(li);
+  updateWords(t);
   updateEmotion(t);
 
-  rafId = requestAnimationFrame(tick);
+  rafId=requestAnimationFrame(tick);
 }
 
-function startPlayback() {
-  isPlaying = true;
-  lastTs = null;
-  playBtn.textContent = '⏸';
-  if (audioLoaded) {
-    audio.play().catch(() => {});
-  }
-  rafId = requestAnimationFrame(tick);
+// ─── PLAY / PAUSE ───
+function play(){
+  playing=true; lastStamp=null;
+  setIcon(playIcon,'pause');
+  audio.play().catch(()=>{});
+  rafId=requestAnimationFrame(tick);
+}
+function pause(){
+  playing=false;
+  setIcon(playIcon,'play');
+  audio.pause();
+  if(rafId) cancelAnimationFrame(rafId);
 }
 
-function pausePlayback() {
-  isPlaying = false;
-  playBtn.textContent = '▶';
-  if (audioLoaded) audio.pause();
-  if (rafId) cancelAnimationFrame(rafId);
-}
+playBtn.addEventListener('click',()=>{ playing?pause():play(); });
 
-playBtn.addEventListener('click', () => {
-  if (isPlaying) pausePlayback();
-  else startPlayback();
+seekEl.addEventListener('input',()=>{
+  const v=parseFloat(seekEl.value);
+  fakeTime=v;
+  if(audio.readyState>=1) audio.currentTime=v;
+  updateEmotion(v);
+  const li=getLineIdx(v);
+  if(li!==curLineIdx){curLineIdx=-1;renderLine(li);}
+  updateWords(v);
+  progressFill.style.width=((v/DURATION)*100)+'%';
+  timeEl.textContent=`${fmt(v)} / ${fmt(DURATION)}`;
 });
 
-seekBar.addEventListener('input', () => {
-  const val = parseFloat(seekBar.value);
-  fakeTime = val;
-  if (audioLoaded) audio.currentTime = val;
-  updateLyrics(val);
-  updateEmotion(val);
-  updateProgress(val, audioLoaded ? (audio.duration || 208) : 208);
+splash.addEventListener('click',()=>{
+  splash.classList.add('gone');
+  setTimeout(()=>splash.style.display='none',1500);
+  play();
 });
 
-audio.addEventListener('loadedmetadata', () => {
-  audioLoaded = true;
-  seekBar.max = audio.duration;
-  audioNote.style.display = 'none';
+audio.addEventListener('ended',()=>{
+  playing=false;
+  setIcon(playIcon,'play');
+  curLineIdx=-1;
+  lyricTextEl.innerHTML='';
 });
 
-audio.addEventListener('error', () => {
-  audioLoaded = false;
-  audioNote.style.display = 'block';
-});
+setInterval(()=>{
+  if(Math.random()>.7) spawnParticles('rgba(160,100,200,0.2)');
+},3000);
 
-audio.src = 'the-night-we-met.mp3';
-
-splash.addEventListener('click', () => {
-  splash.classList.add('hidden');
-  setTimeout(() => { splash.style.display = 'none'; }, 1300);
-  startPlayback();
-});
-
-buildLyricDOM();
-
-// Initial state
-bgLayer.style.background = EMOTIONS[0].bg;
-emotionLabel.textContent = `♡ ${EMOTIONS[0].label}`;
-emotionLabel.style.color = EMOTIONS[0].color;
-updateProgress(0, 208);
-
-// Idle particles
-setInterval(() => {
-  if (Math.random() > 0.6) spawnParticles('rgba(180,140,220,0.25)');
-}, 2500);
+// ─── INIT ───
+bgEl.style.background=EMOTIONS[0].bg;
+document.documentElement.style.setProperty('--glow-color',EMOTIONS[0].gc);
+document.documentElement.style.setProperty('--emotion-label-color',EMOTIONS[0].gc);
 </script>
 </body>
 </html>

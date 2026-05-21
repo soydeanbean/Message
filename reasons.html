@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A Thousand Reasons Why</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #c9796a;
+    --rose-light: #e8b4a8;
+    --rose-pale: #f5e6e3;
+    --rose-deep: #8b3a2e;
+    --ink: #1c1412;
+    --ink-muted: #4a3730;
+    --ink-faint: #8a7470;
+    --parchment: #faf6f2;
+    --parchment-warm: #f2ebe3;
+    --parchment-deep: #e8ddd5;
+    --gold: #c4a35a;
+    --gold-light: #e8d5a0;
+    --cream: #fdf9f5;
+    --page-bg: #f7f2ed;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Lora', serif;
+    background: var(--page-bg);
+    color: var(--ink);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── BACK NAV ── */
+  .back-nav {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 100;
+    opacity: 0;
+    animation: fadeIn 0.8s ease 0.5s forwards;
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-decoration: none;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--parchment-deep);
+    border-radius: 40px;
+    background: rgba(250, 246, 242, 0.8);
+    backdrop-filter: blur(8px);
+    transition: all 0.25s ease;
+  }
+
+  .back-btn:hover {
+    background: var(--parchment-warm);
+    color: var(--rose-deep);
+    border-color: var(--rose-light);
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 100% 80% at 50% 50%, #eeddd8 0%, var(--page-bg) 65%);
+  }
+
+  /* Thousand count decoration */
+  .count-display {
+    position: absolute;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(8rem, 20vw, 18rem);
+    font-weight: 300;
+    color: var(--rose-light);
+    opacity: 0.12;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .header-content { position: relative; z-index: 2; }
+
+  .page-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .page-eyebrow::before, .page-eyebrow::after {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--rose-light);
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.7s forwards;
+  }
+
+  .page-title em { font-style: italic; color: var(--rose-deep); }
+
+  .page-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: var(--ink-faint);
+    margin-top: 1.5rem;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  /* ── THOUGHTS CANVAS ── */
+  .thoughts-intro {
+    text-align: center;
+    padding: 3rem 2rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .thoughts-canvas {
+    position: relative;
+    padding: 2rem 1rem 6rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Each thought card */
+  .thought {
+    position: relative;
+    display: inline-block;
+    margin: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Reveal from left */
+  .thought.from-left { transform: translateX(-60px) rotate(-2deg); }
+  .thought.from-right { transform: translateX(60px) rotate(2deg); }
+  .thought.from-bottom { transform: translateY(50px); }
+  .thought.from-top { transform: translateY(-40px) rotate(1deg); }
+
+  .thought.visible {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+
+  /* Ghost / transparent thoughts */
+  .thought.ghost .thought-inner {
+    background: transparent;
+    border: 1px dashed var(--rose-light);
+    color: var(--ink-faint);
+  }
+
+  .thought.ghost.visible { opacity: 0.45; }
+
+  .thought.wispy .thought-inner {
+    background: rgba(245, 230, 227, 0.3);
+    border: 1px solid rgba(232, 180, 168, 0.4);
+    color: rgba(74, 55, 48, 0.6);
+  }
+
+  .thought.wispy.visible { opacity: 0.65; }
+
+  /* Thought sizes */
+  .thought.sm .thought-inner { padding: 1rem 1.4rem; }
+  .thought.md .thought-inner { padding: 1.3rem 1.8rem; max-width: 260px; }
+  .thought.lg .thought-inner { padding: 1.6rem 2.2rem; max-width: 340px; }
+  .thought.xl .thought-inner { padding: 2rem 2.6rem; max-width: 420px; }
+
+  .thought-inner {
+    background: var(--parchment);
+    border: 1px solid var(--parchment-deep);
+    border-radius: 18px;
+    padding: 1.2rem 1.6rem;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .thought-inner:hover {
+    transform: translateY(-3px) rotate(0.5deg);
+    box-shadow: 0 8px 30px rgba(139, 58, 46, 0.08);
+  }
+
+  /* Number badge */
+  .thought-num {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--rose);
+    color: var(--parchment);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+  }
+
+  .thought-icon {
+    color: var(--rose-light);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .thought-text {
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: var(--ink-muted);
+  }
+
+  .thought.ghost .thought-text,
+  .thought.wispy .thought-text {
+    font-style: italic;
+  }
+
+  /* Accent thoughts */
+  .thought.accent .thought-inner {
+    background: var(--rose-pale);
+    border-color: var(--rose-light);
+  }
+
+  .thought.accent .thought-text {
+    color: var(--rose-deep);
+    font-weight: 500;
+  }
+
+  .thought.gold .thought-inner {
+    background: #fdf8ef;
+    border-color: var(--gold-light);
+  }
+
+  .thought.gold .thought-num {
+    background: var(--gold);
+  }
+
+  /* ── LAYOUT ROWS ── */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .row.right { justify-content: flex-end; }
+  .row.center { justify-content: center; }
+  .row.spread { justify-content: space-between; align-items: center; }
+  .row.left { justify-content: flex-start; }
+
+  /* ── CLOSING SECTION ── */
+  .closing {
+    max-width: 600px;
+    margin: 6rem auto 0;
+    padding: 4rem 2rem 8rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .closing.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .closing-ornament {
+    color: var(--rose-light);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .closing-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-style: italic;
+    color: var(--rose-deep);
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+  }
+
+  .closing-text {
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--ink-muted);
+    margin-bottom: 2.5rem;
+  }
+
+  /* Back button at bottom */
+  .btn-back-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 2.2rem;
+    border: 1.5px solid var(--rose-light);
+    border-radius: 60px;
+    color: var(--rose-deep);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: transparent;
+  }
+
+  .btn-back-main:hover {
+    background: var(--rose-pale);
+    border-color: var(--rose);
+    transform: translateY(-2px);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Responsive */
+  @media (max-width: 680px) {
+    .row { flex-direction: column; }
+    .thought { display: block; margin: 0.6rem auto; }
+    .thought.md .thought-inner,
+    .thought.lg .thought-inner,
+    .thought.xl .thought-inner { max-width: 100%; }
+    .count-display { font-size: 6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Back nav -->
+<nav class="back-nav">
+  <a href="index.html" class="back-btn">
+    <i data-lucide="arrow-left" style="width:14px;height:14px"></i>
+    Back to letter
+  </a>
+</nav>
+
+<!-- ══ HEADER ══ -->
+<header class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="count-display">1000</div>
+  <div class="header-content">
+    <p class="page-eyebrow">The other side</p>
+    <h1 class="page-title">
+      <em>A Thousand</em><br>Reasons Why
+    </h1>
+    <p class="page-subtitle">
+      Every single thing about you<br>that makes letting go feel impossible.
+    </p>
+  </div>
+</header>
+
+<div class="thoughts-intro">✦ thoughts, scattered like they are in my head ✦</div>
+
+<!-- ══ THOUGHTS CANVAS ══ -->
+<div class="thoughts-canvas">
+
+  <!-- ROW 1 -->
+  <div class="row left">
+    <div class="thought from-left md accent">
+      <div class="thought-inner">
+        <div class="thought-num">1</div>
+        <div class="thought-icon"><i data-lucide="heart" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The way you feel things deeply — not just for yourself, but for everyone around you.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom sm ghost">
+      <div class="thought-inner">
+        <div class="thought-num">2</div>
+        <p class="thought-text">Your voice when you're telling a story you're excited about.</p>
+      </div>
+    </div>
+    <div class="thought from-right lg">
+      <div class="thought-inner">
+        <div class="thought-num">3</div>
+        <div class="thought-icon"><i data-lucide="sun" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The rare moments when you're okay, and you light up the whole room without even trying.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="row right">
+    <div class="thought from-bottom sm wispy">
+      <div class="thought-inner">
+        <div class="thought-num">4</div>
+        <p class="thought-text">The way you try, even when everything feels impossible.</p>
+      </div>
+    </div>
+    <div class="thought from-right xl accent">
+      <div class="thought-inner">
+        <div class="thought-num">5</div>
+        <div class="thought-icon"><i data-lucide="sparkles" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">You have a kind of depth that most people spend their whole lives looking for and never find in anyone. I found it in you.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="row spread">
+    <div class="thought from-left lg">
+      <div class="thought-inner">
+        <div class="thought-num">6</div>
+        <div class="thought-icon"><i data-lucide="moon" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The way you see things differently from everyone else. Your perspective is genuinely unlike anyone I've met.</p>
+      </div>
+    </div>
+    <div class="thought from-top sm ghost">
+      <div class="thought-inner">
+        <div class="thought-num">7</div>
+        <p class="thought-text">How you notice small things that everyone else walks past.</p>
+      </div>
+    </div>
+    <div class="thought from-right md wispy">
+      <div class="thought-inner">
+        <div class="thought-num">8</div>
+        <p class="thought-text">The honesty in you, even when it costs you something.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 4 -->
+  <div class="row center">
+    <div class="thought from-bottom xl gold">
+      <div class="thought-inner">
+        <div class="thought-num">9</div>
+        <div class="thought-icon"><i data-lucide="star" style="width:16px;height:16px;color:var(--gold)"></i></div>
+        <p class="thought-text">If things had been different — if your mind wasn't fighting you the way it does — I think I would have stayed without ever questioning it. That says everything.</p>
+      </div>
+    </div>
+    <div class="thought from-right sm">
+      <div class="thought-inner">
+        <div class="thought-num">10</div>
+        <p class="thought-text">The way you apologize — you really mean it.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 5 -->
+  <div class="row left">
+    <div class="thought from-top sm wispy">
+      <div class="thought-inner">
+        <div class="thought-num">11</div>
+        <p class="thought-text">Your laugh, when something actually catches you off guard.</p>
+      </div>
+    </div>
+    <div class="thought from-left lg accent">
+      <div class="thought-inner">
+        <div class="thought-num">12</div>
+        <div class="thought-icon"><i data-lucide="wind" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The way you carry your pain with a kind of quiet dignity that I don't think you even realize you have.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom md ghost">
+      <div class="thought-inner">
+        <div class="thought-num">13</div>
+        <p class="thought-text">How you make me think about things in ways I never would have on my own.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 6 -->
+  <div class="row right">
+    <div class="thought from-right md">
+      <div class="thought-inner">
+        <div class="thought-num">14</div>
+        <div class="thought-icon"><i data-lucide="eye" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The way your eyes look when you're genuinely curious about something.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom lg wispy">
+      <div class="thought-inner">
+        <div class="thought-num">15</div>
+        <p class="thought-text">The way you let me in — even partially, even carefully — meant more to me than you know.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 7 -->
+  <div class="row spread">
+    <div class="thought from-left sm ghost">
+      <div class="thought-inner">
+        <div class="thought-num">16</div>
+        <p class="thought-text">How you fight for people you love.</p>
+      </div>
+    </div>
+    <div class="thought from-top xl accent">
+      <div class="thought-inner">
+        <div class="thought-num">17</div>
+        <div class="thought-icon"><i data-lucide="feather" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">There's a version of you — the one that exists underneath all the heaviness — that I have seen. And that version is someone worth everything. Don't forget that she exists.</p>
+      </div>
+    </div>
+    <div class="thought from-right sm wispy">
+      <div class="thought-inner">
+        <div class="thought-num">18</div>
+        <p class="thought-text">The way you hold onto things that matter to you.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 8 -->
+  <div class="row center">
+    <div class="thought from-bottom md">
+      <div class="thought-inner">
+        <div class="thought-num">19</div>
+        <div class="thought-icon"><i data-lucide="cloud" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The gentleness in you, even when you're hurting.</p>
+      </div>
+    </div>
+    <div class="thought from-left lg gold">
+      <div class="thought-inner">
+        <div class="thought-num">20</div>
+        <div class="thought-icon"><i data-lucide="infinity" style="width:16px;height:16px;color:var(--gold)"></i></div>
+        <p class="thought-text">I loved the parts of you that weren't your pain. And those parts were real, and bright, and worth loving.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 9 -->
+  <div class="row left">
+    <div class="thought from-left md accent">
+      <div class="thought-inner">
+        <div class="thought-num">21</div>
+        <div class="thought-icon"><i data-lucide="heart-handshake" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">You let me go because you were thinking about me. That kind of selfless love is rare. I see it.</p>
+      </div>
+    </div>
+    <div class="thought from-top sm ghost">
+      <div class="thought-inner">
+        <div class="thought-num">22</div>
+        <p class="thought-text">Your stubbornness — even when it drives me crazy.</p>
+      </div>
+    </div>
+    <div class="thought from-right sm wispy">
+      <div class="thought-inner">
+        <div class="thought-num">23</div>
+        <p class="thought-text">The way you hold space for other people's feelings.</p>
+      </div>
+    </div>
+  </div>
+
+    <!-- ROW 10 -->
+  <div class="row left">
+    <div class="thought from-left md accent">
+      <div class="thought-inner">
+        <div class="thought-num">24</div>
+        <div class="thought-icon"><i data-lucide="heart" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">The way you feel emotions so deeply shows how real you are.</p>
+      </div>
+    </div>
+    <div class="thought from-top sm lg">
+      <div class="thought-inner">
+        <div class="thought-num">25</div>
+        <p class="thought-text">Even in silence, you somehow manage to express what words cannot.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom xl ghost">
+      <div class="thought-inner">
+        <div class="thought-num">26</div>
+        <div class="thought-icon"><i data-lucide="sun" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">You still try to care for others even when your mind is heavy.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 11 -->
+  <div class="row right">
+    <div class="thought from-bottom sm wispy">
+      <div class="thought-inner">
+        <div class="thought-num">27</div>
+        <p class="thought-text">There’s a softness in you that doesn’t disappear even during your worst days.</p>
+      </div>
+    </div>
+    <div class="thought from-right xl accent">
+      <div class="thought-inner">
+        <div class="thought-num">28</div>
+        <div class="thought-icon"><i data-lucide="sparkles" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">You think about things longer and deeper than most people ever would.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 12 -->
+  <div class="row spread">
+    <div class="thought from-left xl lg">
+      <div class="thought-inner">
+        <div class="thought-num">29</div>
+        <div class="thought-icon"><i data-lucide="moon" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">Sometimes you open up in small moments that mean more than big conversations.</p>
+      </div>
+    </div>
+    <div class="thought from-top md wispy">
+      <div class="thought-inner">
+        <div class="thought-num">30</div>
+        <p class="thought-text">Your presence alone can feel calming even when you’re struggling inside.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom xl ghost">
+      <div class="thought-inner">
+        <div class="thought-num">31</div>
+        <p class="thought-text">You don’t fake emotions, which makes everything you feel more genuine.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 13 -->
+  <div class="row center">
+    <div class="thought from-bottom xl gold">
+      <div class="thought-inner">
+        <div class="thought-num">32</div>
+        <div class="thought-icon"><i data-lucide="star" style="width:16px;height:16px;color:var(--gold)"></i></div>
+        <p class="thought-text">I want to build a future where your mind feels safe, calm, and genuinely understood every day.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom xl wispy">
+      <div class="thought-inner">
+        <div class="thought-num">33</div>
+        <p class="thought-text">Imagining a life with you makes even ordinary days feel meaningful and worth working toward.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 14 -->
+  <div class="row left">
+    <div class="thought from-top sm wispy">
+      <div class="thought-inner">
+        <div class="thought-num">34</div>
+        <p class="thought-text">I Love you from the very bottom of my heart</p>
+      </div>
+    </div>
+    <div class="thought from-left lg accent">
+      <div class="thought-inner">
+        <div class="thought-num">35??</div>
+        <div class="thought-icon"><i data-lucide="wind" style="width:16px;height:16px"></i></div>
+        <p class="thought-text">I've sworn to love you forever, the promise that i have yet to promise someone, It may not show a thousand reasons, but there are more to heart, than to words.</p>
+      </div>
+    </div>
+    <div class="thought from-bottom md ghost">
+      <div class="thought-inner">
+        <div class="thought-num">??</div>
+        <p class="thought-text">I Really never wanna lose you, but as far as the path go, there is an end i guess, but... there can be another path in the other side right?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 15 — Final large -->
+  <div class="row center">
+    <div class="thought from-bottom xl accent">
+      <div class="thought-inner">
+        <div class="thought-num">∞</div>
+        <div class="thought-icon"><i data-lucide="heart" style="width:20px;height:20px"></i></div>
+        <p class="thought-text" style="font-size:1rem; line-height:1.85">
+          <em>I Love you and ive already engraved it to myself:(</em><br><br>
+          but I won't judge you when you've found another person to love, because you deserve to be loved and cared for, and it will always be your choice, i love you, as long as you're happy, it will always fill my heart, after you, there's no one else, i plead to be alone... Thank you for everthing, thank you for making me feel loved, realizing things that i should've a long long time ago but still left me confused, Thanks for everything you've dont to me, the memories, i hoped for it to keep going but i respect your decision, i always had, even if u've let go, there will always be a place for you in my heart, i never lied, i never will, even if i do, it will be hard for me to approach. I hope you like my letter, it may not be enough but trust me, i spent time on it:), by that, showing how greatful i am to have u but sadly letting go, actions that shows how much effort i can do, how far i can go for you, no matter how long it takes, no matter what happens...<br><i><b>I Love You.</b></i>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLACEHOLDER ROWS — ghost thoughts for the "rest" of the thousand -->
+  <div class="row spread" style="opacity:0.3; pointer-events:none; margin-top: 2rem;">
+    <div class="thought from-left sm ghost" style="opacity:0.2 !important; display:inline-block">
+      <div class="thought-inner"><p class="thought-text">reason 24...</p></div>
+    </div>
+    <div class="thought sm ghost" style="opacity:0.15 !important; display:inline-block">
+      <div class="thought-inner"><p class="thought-text">reason 25...</p></div>
+    </div>
+    <div class="thought sm ghost" style="opacity:0.1 !important; display:inline-block">
+      <div class="thought-inner"><p class="thought-text">reason 26...</p></div>
+    </div>
+    <div class="thought sm ghost" style="opacity:0.06 !important; display:inline-block">
+      <div class="thought-inner"><p class="thought-text">...</p></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ CLOSING ══ -->
+<section class="closing" id="closing">
+  <div class="closing-ornament">
+    <i data-lucide="heart" style="width:32px;height:32px;stroke:var(--rose-light);fill:var(--rose-pale)"></i>
+  </div>
+  <h2 class="closing-title">
+    "I still want you to be okay.<br>Not because of me.<br>Because you deserve to be happy.<br>Even if it hurts, I have to let you go."<br><br><i><b>For You.</b></i>
+  </h2>
+  <p class="closing-text">
+    Even when your thoughts tell you otherwise.<br>
+    Even on the heaviest days.<br>
+    You deserve to be happy.
+  </p>
+  <a href="index.html" class="btn-back-main">
+    <i data-lucide="arrow-left" style="width:16px;height:16px"></i>
+    Return to the beginning, where it all started? or where it will end. It can always happen.<i><b>Love Yourself.</b></i>
+  </a>
+</section>
+
+<script>
+  lucide.createIcons();
+
+  // Scroll reveal for thoughts
+  const thoughts = document.querySelectorAll('.thought');
+  const closing = document.querySelector('.closing');
+
+  const thoughtObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const delay = (entry.target.dataset.delay || 0);
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, delay);
+        thoughtObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+  thoughts.forEach((t, i) => {
+    t.dataset.delay = (i % 4) * 120;
+    thoughtObserver.observe(t);
+  });
+
+  const closingObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        closingObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  if (closing) closingObserver.observe(closing);
+</script>
+</body>
+</html>

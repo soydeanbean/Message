@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>One Reason Against A Thousand Reasons Why</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #c9796a;
+    --rose-light: #e8b4a8;
+    --rose-pale: #f5e6e3;
+    --rose-deep: #8b3a2e;
+    --ink: #1c1412;
+    --ink-muted: #4a3730;
+    --ink-faint: #8a7470;
+    --parchment: #faf6f2;
+    --parchment-warm: #f2ebe3;
+    --parchment-deep: #e8ddd5;
+    --gold: #c4a35a;
+    --gold-light: #e8d5a0;
+    --cream: #fdf9f5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Lora', serif;
+    background: var(--parchment);
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, #f0ddd8 0%, var(--parchment) 70%);
+  }
+
+  /* Floating petals */
+  .petal {
+    position: absolute;
+    border-radius: 50% 0 50% 0;
+    opacity: 0;
+    animation: petalFall linear infinite;
+  }
+
+  @keyframes petalFall {
+    0% { transform: translateY(-60px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.4; }
+    90% { opacity: 0.15; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rose);
+    opacity: 0;
+    animation: fadeUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--rose-light);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.8rem, 8vw, 6.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    opacity: 0;
+    animation: fadeUp 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--rose-deep);
+  }
+
+  .title-divider {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--rose-light);
+    display: block;
+    margin: 0.3rem 0;
+    opacity: 0;
+    animation: fadeUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.9s forwards;
+  }
+
+  .hero-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--ink-faint);
+    margin-top: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
+    line-height: 1.8;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 1.8s forwards;
+    color: var(--ink-faint);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .scroll-hint .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--rose-light), transparent);
+    animation: scrollPulse 2s ease-in-out infinite 2.5s;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 0.6; }
+    50% { transform: scaleY(1.3); opacity: 1; }
+  }
+
+  /* ── JOURNAL SECTION ── */
+  #journal {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 6rem 2rem 4rem;
+  }
+
+  .journal-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .journal-header .section-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rose);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .journal-header .section-tag::before, .journal-header .section-tag::after {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--rose-light);
+  }
+
+  .journal-ornament {
+    color: var(--rose-light);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Journal paragraphs — scroll-reveal */
+  .journal-para {
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    line-height: 1.95;
+    color: var(--ink-muted);
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .journal-para.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .journal-para.italic-block {
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--rose-deep);
+    border-left: 2px solid var(--rose-light);
+    padding-left: 1.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .journal-para.weight {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ── SECTION BREAK ── */
+  .section-break {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+    opacity: 0;
+    transform: scaleX(0.7);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+
+  .section-break.visible {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .section-break .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--rose-light), transparent);
+  }
+
+  .section-break .diamond {
+    color: var(--rose);
+    font-size: 0.6rem;
+  }
+
+  /* ── OPEN LETTER BUTTON ── */
+  .cta-wrapper {
+    text-align: center;
+    padding: 4rem 2rem 8rem;
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .cta-wrapper.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cta-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 2.8rem;
+    background: var(--rose-deep);
+    color: var(--parchment);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 24px rgba(139, 58, 46, 0.2);
+  }
+
+  .btn-open::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.15), transparent 70%);
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-open:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 40px rgba(139, 58, 46, 0.3);
+  }
+
+  .btn-open:active { transform: scale(0.98); }
+
+  .btn-open .btn-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .btn-open:hover .btn-icon { transform: translateX(4px); }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    border-top: 1px solid var(--parchment-deep);
+    opacity: 0;
+    animation: fadeIn 1s ease 2s forwards;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.6; }
+  }
+
+  /* HEARTBEAT floating icon */
+  .hero-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 340px;
+    height: 340px;
+    opacity: 0.04;
+    pointer-events: none;
+    animation: heartbeat 3s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    14% { transform: translate(-50%, -50%) scale(1.06); }
+    28% { transform: translate(-50%, -50%) scale(1); }
+    42% { transform: translate(-50%, -50%) scale(1.04); }
+    70% { transform: translate(-50%, -50%) scale(1); }
+  }
+
+  /* Decorative quote marks */
+  .deco-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 8rem;
+    line-height: 0;
+    color: var(--rose-light);
+    opacity: 0.3;
+    vertical-align: -0.4em;
+    display: inline-block;
+    margin-right: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+
+  <!-- Giant ghost heart -->
+  <svg class="hero-icon" viewBox="0 0 100 90" fill="var(--rose-deep)" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 85 C50 85 5 55 5 28 C5 15 15 5 28 5 C37 5 45 10 50 18 C55 10 63 5 72 5 C85 5 95 15 95 28 C95 55 50 85 50 85Z"/>
+  </svg>
+
+  <!-- Floating petals (generated via JS) -->
+  <div id="petals"></div>
+
+  <div class="hero-content">
+    <p class="eyebrow">A letter for you</p>
+
+    <h1 class="hero-title">
+      One Reason
+      <span class="title-divider">against</span>
+      <em>A Thousand Reasons Why</em>
+    </h1>
+
+    <p class="hero-sub">
+      Two truths held at once.<br>Both real. Both mine.
+    </p>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Read</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ JOURNAL ══ -->
+<article id="journal">
+
+  <div class="journal-header">
+    <div class="section-tag">The Letter</div>
+    <div class="journal-ornament">
+      <i data-lucide="feather" style="width:22px;height:22px;stroke:var(--rose-light)"></i>
+    </div>
+  </div>
+
+  <p class="journal-para">
+    I keep thinking about this in two parts.
+  </p>
+
+  <p class="journal-para italic-block">
+    One reason why I shouldn't stay.<br>
+    And a thousand reasons why I want to.
+  </p>
+
+  <p class="journal-para">
+    And somehow, both are real at the same time.
+  </p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="diamond">◆</div>
+    <div class="line"></div>
+  </div>
+
+  <p class="journal-para">
+    The one reason is simple, but it hurts in a way I can't explain properly. It's not that I don't care about you — it's the opposite. It's that I care too much, and I don't know how to hold you and your pain without losing myself a little every time you break.
+  </p>
+
+  <p class="journal-para">
+    I hear you when you talk about what's inside your head. I try to stay steady, to be someone you can lean on, to tell you it'll be okay. And for a moment, I believe it too. But after the conversation ends, it doesn't leave me the same. I carry it. I replay it. I worry in silence.
+  </p>
+
+  <p class="journal-para weight">
+    And I think maybe that's the part I can't ignore anymore.
+  </p>
+
+  <p class="journal-para">
+    Not because you are a burden — you're not.
+  </p>
+
+  <p class="journal-para italic-block">
+    But because I'm starting to realize I'm not strong enough to be both your comfort and still stay whole.
+  </p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="diamond">◆</div>
+    <div class="line"></div>
+  </div>
+
+  <p class="journal-para">
+    And then there's the other side.
+  </p>
+
+  <p class="journal-para weight">
+    A thousand reasons why I want to stay.
+  </p>
+
+  <p class="journal-para">
+    Because when you're okay, even for a little while, you're someone I don't want to lose from my life. Because I see the parts of you that aren't your pain — the way you think, the way you feel deeply, the way you try even when everything feels heavy. Those parts matter to me more than I can put into words.
+  </p>
+
+  <p class="journal-para italic-block">
+    If things were different… if your mind wasn't fighting you like this… I think I would've stayed without even questioning it.
+  </p>
+
+  <p class="journal-para weight">
+    That's the hardest part.
+  </p>
+
+  <p class="journal-para">
+    Not choosing between loving you or not loving you.
+  </p>
+
+  <p class="journal-para italic-block">
+    But realizing that love alone isn't always enough to make something safe for both people.
+  </p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="diamond">◆</div>
+    <div class="line"></div>
+  </div>
+
+  <p class="journal-para">
+    You letting me go because you care about my feelings — I understand it. But it still hurts more than I expected. Because it feels like losing you while still caring about you at the same time.
+  </p>
+
+  <p class="journal-para">
+    I don't hate you for any of this.
+    I don't blame you either.
+  </p>
+
+  <p class="journal-para">
+    I just wish things were lighter for you. I wish your mind didn't turn against you the way it does. And I wish I knew how to help you without feeling like I'm slowly disappearing in the process.
+  </p>
+
+  <p class="journal-para italic-block">
+    Maybe that's the truth I didn't want to admit — that sometimes caring deeply still isn't enough to fix what's broken.
+  </p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="diamond">◆</div>
+    <div class="line"></div>
+  </div>
+
+  <p class="journal-para">
+    But even with that, I hope you don't think you're alone in it. Even if I can't be what holds all of this for you, I still want you to be okay. Not because of me. Because you deserve to be here, even when your thoughts tell you otherwise.
+  </p>
+
+  <p class="journal-para">
+    And for me…
+  </p>
+
+  <p class="journal-para italic-block">
+    I think I have to learn how to love someone without drowning in it.
+  </p>
+
+  <p class="journal-para">
+    Even if it means letting go.<br>
+    Even if it hurts every time I think about <em>"what could've been."</em>
+  </p>
+
+</article>
+
+<!-- ══ CTA ══ -->
+<div class="cta-wrapper" id="cta">
+  <p class="cta-label">There is more to say</p>
+  <a href="reasons.html" class="btn-open">
+    <i data-lucide="book-open" class="btn-icon"></i>
+    A Thousand Reasons Why
+    <i data-lucide="arrow-right" class="btn-icon"></i>
+  </a>
+</div>
+
+<footer class="site-footer">
+  <b>Written with love, and with honesty. -Rejiro Reobaldez</b>
+</footer>
+
+<script>
+  // Init Lucide icons
+  lucide.createIcons();
+
+  // Generate floating petals
+  const petalContainer = document.getElementById('petals');
+  const petalColors = ['#e8b4a8', '#f0ccc5', '#d4a098', '#c9796a'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    const size = 6 + Math.random() * 12;
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size * 0.6}px;
+      left: ${Math.random() * 100}%;
+      background: ${petalColors[Math.floor(Math.random() * petalColors.length)]};
+      animation-duration: ${7 + Math.random() * 8}s;
+      animation-delay: ${Math.random() * 8}s;
+      border-radius: ${Math.random() > 0.5 ? '50% 0 50% 0' : '0 50% 0 50%'};
+    `;
+    petalContainer.appendChild(p);
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.journal-para, .section-break, .cta-wrapper');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -116,6 +116,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 
 <audio id="audio" src="music.mp3" preload="auto"></audio>
 
+<button onclick="playMusic()">Play</button>
+
+<script>
+const audio = document.getElementById("audio");
+
+// set default volume here
+audio.volume = 1;
+
+function playMusic() {
+  audio.muted = false;
+  audio.volume = 1;
+  audio.play();
+}
+</script>
+
 <script>
 lucide.createIcons();
 

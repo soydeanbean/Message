@@ -37,7 +37,6 @@
     min-height: 100vh;
   }
 
-  /* Noise overlay */
   body::before {
     content: '';
     position: fixed;
@@ -48,7 +47,6 @@
     opacity: 0.4;
   }
 
-  /* ── BACK NAV ── */
   .back-nav {
     position: fixed;
     top: 1.5rem;
@@ -83,7 +81,6 @@
     border-color: var(--rose-light);
   }
 
-  /* ── PAGE HEADER ── */
   .page-header {
     min-height: 60vh;
     display: flex;
@@ -102,7 +99,6 @@
     background: radial-gradient(ellipse 100% 80% at 50% 50%, #eeddd8 0%, var(--page-bg) 65%);
   }
 
-  /* Thousand count decoration */
   .count-display {
     position: absolute;
     font-family: 'Cormorant Garamond', serif;
@@ -164,7 +160,6 @@
     animation: fadeUp 0.8s ease 1s forwards;
   }
 
-  /* ── THOUGHTS CANVAS ── */
   .thoughts-intro {
     text-align: center;
     padding: 3rem 2rem 1rem;
@@ -182,7 +177,6 @@
     margin: 0 auto;
   }
 
-  /* Each thought card */
   .thought {
     position: relative;
     display: inline-block;
@@ -191,7 +185,6 @@
     transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Reveal from left */
   .thought.from-left { transform: translateX(-60px) rotate(-2deg); }
   .thought.from-right { transform: translateX(60px) rotate(2deg); }
   .thought.from-bottom { transform: translateY(50px); }
@@ -202,7 +195,6 @@
     transform: translateX(0) translateY(0) rotate(0deg);
   }
 
-  /* Ghost / transparent thoughts */
   .thought.ghost .thought-inner {
     background: transparent;
     border: 1px dashed var(--rose-light);
@@ -219,7 +211,6 @@
 
   .thought.wispy.visible { opacity: 0.65; }
 
-  /* Thought sizes */
   .thought.sm .thought-inner { padding: 1rem 1.4rem; }
   .thought.md .thought-inner { padding: 1.3rem 1.8rem; max-width: 260px; }
   .thought.lg .thought-inner { padding: 1.6rem 2.2rem; max-width: 340px; }
@@ -239,7 +230,6 @@
     box-shadow: 0 8px 30px rgba(139, 58, 46, 0.08);
   }
 
-  /* Number badge */
   .thought-num {
     position: absolute;
     top: -10px;
@@ -278,7 +268,6 @@
     font-style: italic;
   }
 
-  /* Accent thoughts */
   .thought.accent .thought-inner {
     background: var(--rose-pale);
     border-color: var(--rose-light);
@@ -298,7 +287,6 @@
     background: var(--gold);
   }
 
-  /* ── LAYOUT ROWS ── */
   .row {
     display: flex;
     flex-wrap: wrap;
@@ -311,7 +299,6 @@
   .row.spread { justify-content: space-between; align-items: center; }
   .row.left { justify-content: flex-start; }
 
-  /* ── CLOSING SECTION ── */
   .closing {
     max-width: 600px;
     margin: 6rem auto 0;
@@ -351,7 +338,6 @@
     margin-bottom: 2.5rem;
   }
 
-  /* Back button at bottom */
   .btn-back-main {
     display: inline-flex;
     align-items: center;
@@ -373,7 +359,6 @@
     transform: translateY(-2px);
   }
 
-  /* ── ANIMATIONS ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -384,7 +369,6 @@
     to { opacity: 1; }
   }
 
-  /* Responsive */
   @media (max-width: 680px) {
     .row { flex-direction: column; }
     .thought { display: block; margin: 0.6rem auto; }
@@ -397,7 +381,6 @@
 </head>
 <body>
 
-<!-- Back nav -->
 <nav class="back-nav">
   <a href="index.html" class="back-btn">
     <i data-lucide="arrow-left" style="width:14px;height:14px"></i>
@@ -405,7 +388,6 @@
   </a>
 </nav>
 
-<!-- ══ HEADER ══ -->
 <header class="page-header">
   <div class="page-header-bg"></div>
   <div class="count-display">1000</div>
@@ -422,10 +404,8 @@
 
 <div class="thoughts-intro">✦ thoughts, scattered like they are in my head ✦</div>
 
-<!-- ══ THOUGHTS CANVAS ══ -->
 <div class="thoughts-canvas">
 
-  <!-- ROW 1 -->
   <div class="row left">
     <div class="thought from-left md accent">
       <div class="thought-inner">
@@ -449,7 +429,6 @@
     </div>
   </div>
 
-  <!-- ROW 2 -->
   <div class="row right">
     <div class="thought from-bottom sm wispy">
       <div class="thought-inner">
@@ -466,7 +445,6 @@
     </div>
   </div>
 
-  <!-- ROW 3 -->
   <div class="row spread">
     <div class="thought from-left lg">
       <div class="thought-inner">
@@ -489,7 +467,6 @@
     </div>
   </div>
 
-  <!-- ROW 4 -->
   <div class="row center">
     <div class="thought from-bottom xl gold">
       <div class="thought-inner">
@@ -506,7 +483,6 @@
     </div>
   </div>
 
-  <!-- ROW 5 -->
   <div class="row left">
     <div class="thought from-top sm wispy">
       <div class="thought-inner">
@@ -529,7 +505,6 @@
     </div>
   </div>
 
-  <!-- ROW 6 -->
   <div class="row right">
     <div class="thought from-right md">
       <div class="thought-inner">
@@ -546,7 +521,6 @@
     </div>
   </div>
 
-  <!-- ROW 7 -->
   <div class="row spread">
     <div class="thought from-left sm ghost">
       <div class="thought-inner">
@@ -569,7 +543,6 @@
     </div>
   </div>
 
-  <!-- ROW 8 -->
   <div class="row center">
     <div class="thought from-bottom md">
       <div class="thought-inner">
@@ -587,7 +560,6 @@
     </div>
   </div>
 
-  <!-- ROW 9 -->
   <div class="row left">
     <div class="thought from-left md accent">
       <div class="thought-inner">
@@ -610,7 +582,6 @@
     </div>
   </div>
 
-    <!-- ROW 10 -->
   <div class="row left">
     <div class="thought from-left md accent">
       <div class="thought-inner">
@@ -633,8 +604,7 @@
       </div>
     </div>
   </div>
-
-  <!-- ROW 11 -->
+ 
   <div class="row right">
     <div class="thought from-bottom sm wispy">
       <div class="thought-inner">
@@ -651,7 +621,6 @@
     </div>
   </div>
 
-  <!-- ROW 12 -->
   <div class="row spread">
     <div class="thought from-left xl lg">
       <div class="thought-inner">
@@ -674,7 +643,6 @@
     </div>
   </div>
 
-  <!-- ROW 13 -->
   <div class="row center">
     <div class="thought from-bottom xl gold">
       <div class="thought-inner">
@@ -691,7 +659,6 @@
     </div>
   </div>
 
-  <!-- ROW 14 -->
   <div class="row left">
     <div class="thought from-top sm wispy">
       <div class="thought-inner">
@@ -714,7 +681,6 @@
     </div>
   </div>
 
-  <!-- ROW 15 — Final large -->
   <div class="row center">
     <div class="thought from-bottom xl accent">
       <div class="thought-inner">
@@ -727,26 +693,8 @@
       </div>
     </div>
   </div>
-
-  <!-- PLACEHOLDER ROWS — ghost thoughts for the "rest" of the thousand -->
-  <div class="row spread" style="opacity:0.3; pointer-events:none; margin-top: 2rem;">
-    <div class="thought from-left sm ghost" style="opacity:0.2 !important; display:inline-block">
-      <div class="thought-inner"><p class="thought-text">reason 24...</p></div>
-    </div>
-    <div class="thought sm ghost" style="opacity:0.15 !important; display:inline-block">
-      <div class="thought-inner"><p class="thought-text">reason 25...</p></div>
-    </div>
-    <div class="thought sm ghost" style="opacity:0.1 !important; display:inline-block">
-      <div class="thought-inner"><p class="thought-text">reason 26...</p></div>
-    </div>
-    <div class="thought sm ghost" style="opacity:0.06 !important; display:inline-block">
-      <div class="thought-inner"><p class="thought-text">...</p></div>
-    </div>
-  </div>
-
 </div>
 
-<!-- ══ CLOSING ══ -->
 <section class="closing" id="closing">
   <div class="closing-ornament">
     <i data-lucide="heart" style="width:32px;height:32px;stroke:var(--rose-light);fill:var(--rose-pale)"></i>
@@ -768,7 +716,6 @@
 <script>
   lucide.createIcons();
 
-  // Scroll reveal for thoughts
   const thoughts = document.querySelectorAll('.thought');
   const closing = document.querySelector('.closing');
 
